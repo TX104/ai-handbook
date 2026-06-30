@@ -41,3 +41,7 @@ node_modules/
 dist/
 .vite/
 .env.local
+
+### AI ###
+.claude
+CLAUDE.md
