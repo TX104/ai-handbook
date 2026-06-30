@@ -1,8 +1,8 @@
 上一篇咱们用纯 Java + OkHttp 把 ReAct 循环跑通了：五个组件一装，退款场景转了四圈工具调用，查物流两圈搞定，Thought-Action-Observation 循环已经能在 IDE 里断点调试了。
 
-但文末那张表里第一行就写着："工具定义太简陋——`description()` 返回一段文本，参数格式靠大脑自己猜。"你可能跑几次没遇到问题，觉得也还行。那咱们先看看它什么时候会翻车。
+但文末那张表里第一行就写着：“工具定义太简陋——`description()` 返回一段文本，参数格式靠大脑自己猜。”你可能跑几次没遇到问题，觉得也还行。那咱们先看看它什么时候会翻车。
 
-> 本项目中具体代码已上传 GitHub [TinyAgent](https://github.com/nageoffer/tinyagent)，大家 Clone 项目后，将代码分支切换到 1.0.x，默认主分支是最新代码。运行前复制 `.env.example` 为 `.env`，把自己的 API Key 填进去，默认阿里云百炼平台；`.env` 已加入 `.gitignore`，切分支时不会丢。
+> 本项目中具体代码已上传 GitHub [TinyAgent](https://github.com/nageoffer/tinyagent)，大家 Clone 项目后，将代码分支切换到 1.1.x，默认主分支是最新代码。运行前复制 `.env.example` 为 `.env`，把自己的 API Key 填进去，默认阿里云百炼平台；`.env` 已加入 `.gitignore`，切分支时不会丢。
 
 ## 先看翻车现场
 
@@ -30,7 +30,7 @@ Action Input: {"order_id":"88231","refund_reason":"质量问题"}
 
 第一种用了键值对格式，第二种直接拼字符串，第三种用了错误的字段名。三种情况的共同点是——`invoke()` 里解析 JSON 直接报错，工具返回异常信息，大脑看到错误再试一次，运气好能纠正，运气不好连试三次格式都不对，用户在那干等。
 
-为什么会这样？因为 `description()` 只是一段自然语言，大脑理解自然语言有歧义。"输入：JSON 格式，包含 orderId 和 reason"——这句话对人来说很清楚，但大模型可能理解成各种格式。它不知道字段名是驼峰还是下划线，不知道值应该是字符串还是数字，不知道是不是每个字段都必填。
+为什么会这样？因为 `description()` 只是一段自然语言，大脑理解自然语言有歧义。“输入：JSON 格式，包含 orderId 和 reason”——这句话对人来说很清楚，但大模型可能理解成各种格式。它不知道字段名是驼峰还是下划线，不知道值应该是字符串还是数字，不知道是不是每个字段都必填。
 
 ### 2. 再看一个更隐蔽的问题
 
@@ -48,7 +48,7 @@ Action Input: orderId: 88231
 Action Input: {"orderId":"88231"}
 ```
 
-第一种在前面加了中文前缀，第二种加了字段名，第三种直接传了 JSON。`invoke()` 里用 `input.trim()` 拿到的不是纯订单号，`equals("88231")` 匹配失败，返回"订单不存在"。大脑看到这个结果，可能会以为订单真的不存在，给用户一个错误的回复——比翻车更危险，因为你都不知道它错了。
+第一种在前面加了中文前缀，第二种加了字段名，第三种直接传了 JSON。`invoke()` 里用 `input.trim()` 拿到的不是纯订单号，`equals("88231")` 匹配失败，返回“订单不存在”。大脑看到这个结果，可能会以为订单真的不存在，给用户一个错误的回复——比翻车更危险，因为你都不知道它错了。
 
 ### 3. 问题的根源
 
@@ -58,8 +58,8 @@ Action Input: {"orderId":"88231"}
 
 | 缺陷 | 表现 | 后果 |
 |------|------|------|
-| 格式模糊 | "输入：JSON 格式"——什么样的 JSON？ | 大脑可能传 JSON、键值对、纯文本，格式不可控 |
-| 字段名不确定 | "包含 orderId"——是 `orderId` 还是 `order_id`？ | 解析时找不到字段，工具执行失败 |
+| 格式模糊 | “输入：JSON 格式”——什么样的 JSON？ | 大脑可能传 JSON、键值对、纯文本，格式不可控 |
+| 字段名不确定 | “包含 orderId”——是 `orderId` 还是 `order_id`？ | 解析时找不到字段，工具执行失败 |
 | 约束缺失 | 没说哪些必填、什么类型、取值范围 | 大脑可能漏传参数或传了不合法的值 |
 
 解决方案其实你已经见过了。在 RAG 系列的 Function Call（函数调用）那一篇里，模型 API 原生的工具定义就是用 JSON Schema 来描述参数的——字段名、类型、是否必填、描述，全部用结构化的格式写死，不给模型发挥的空间。
@@ -70,7 +70,7 @@ Action Input: {"orderId":"88231"}
 
 ### 1. 什么是 JSON Schema
 
-JSON Schema 是一套用 JSON 格式来描述 JSON 数据结构的标准。简单说，它是"JSON 的说明书"——告诉你一段 JSON 里应该有哪些字段、每个字段是什么类型、哪些必填。
+JSON Schema 是一套用 JSON 格式来描述 JSON 数据结构的标准。简单说，它是 JSON 的说明书——告诉你一段 JSON 里应该有哪些字段、每个字段是什么类型、哪些必填。
 
 举个例子，`applyRefund` 工具需要的入参是这样的 JSON：
 
@@ -111,7 +111,7 @@ JSON Schema 是一套用 JSON 格式来描述 JSON 数据结构的标准。简�
 
 | 关键字 | 作用 | 示例 |
 |--------|------|------|
-| `type` | 值的类型 | `"string"`、`"number"`、`"integer"`、`"boolean"`、`"object"`、`"array"` |
+| `type` | 值的类型 | `string`、`number`、`integer`、`boolean`、`object`、`array` |
 | `properties` | 对象里包含的字段 | `{"orderId": {"type": "string"}}` |
 | `required` | 必填字段列表 | `["orderId", "reason"]` |
 | `description` | 字段的自然语言说明 | `"订单号，如 88231"` |
@@ -227,7 +227,7 @@ public class QueryOrderTool implements Tool {
 
 注意 `invoke()` 的变化：上一篇直接拿 `input.trim()` 当订单号用，现在改成从 JSON 里提取 `orderId` 字段。既然告诉大脑要传 JSON，`invoke()` 里也得按 JSON 来解析——前后一致，不留歧义。
 
-> `ToolUtils.extractField()` 是个工具方法，后面的"从入参到解析"小节会统一实现，这里先看效果。
+> `ToolUtils.extractField()` 是个工具方法，后面的从入参到解析小节会统一实现，这里先看效果。
 
 **退款申请工具**——两个必填字段，这正是上面翻车的重灾区：
 
@@ -265,16 +265,25 @@ public class ApplyRefundTool implements Tool {
 
     @Override
     public String invoke(String input) {
-        String orderId = ToolUtils.extractField(input, "orderId");
-        String reason = ToolUtils.extractField(input, "reason");
+        String orderId = ToolUtils.extractRequiredField(input, "orderId");
+        if (orderId.isBlank()) {
+            return ToolUtils.missingRequiredField("orderId");
+        }
+
+        String reason = ToolUtils.extractRequiredField(input, "reason");
+        if (reason.isBlank()) {
+            return ToolUtils.missingRequiredField("reason");
+        }
+
         return "{\"success\":true,\"refundId\":\"RF20260629001\","
              + "\"orderId\":\"" + orderId + "\","
+             + "\"reason\":\"" + reason + "\","
              + "\"message\":\"退款申请已提交，预计 1-3 个工作日到账\"}";
     }
 }
 ```
 
-对比上一篇的 `description()`，参数信息从一段自然语言变成了结构化的 Schema：字段名锁死 `orderId` 和 `reason`，类型锁死 `string`，两个都是 `required`。大脑看到这个 Schema，输出 `{"order_id":"88231"}` 这种错误字段名的概率会骤降。
+对比上一篇的 `description()`，参数信息从一段自然语言变成了结构化的 Schema：字段名锁死 `orderId` 和 `reason`，类型锁死 `string`，两个都是 `required`。`invoke()` 里也要跟着做必填校验，缺 `orderId` 或 `reason` 时直接返回明确错误，避免出现参数没拿到却仍然“退款成功”的假成功。大脑看到这个 Schema，输出 `{"order_id":"88231"}` 这种错误字段名的概率会骤降。
 
 **查物流工具**——输入是运单号：
 
@@ -387,7 +396,7 @@ public class GetCurrentTimeTool implements Tool {
 }
 ```
 
-五个工具全部改完。核心变化就一个：**参数定义从 `description()` 里的自然语言，搬到了 `parameters()` 里的 JSON Schema**。`description()` 只管说"我能干什么"，`parameters()` 专管说"要传什么参数"，职责分离。
+五个工具全部改完。核心变化就一个：**参数定义从 `description()` 里的自然语言，搬到了 `parameters()` 里的 JSON Schema**。`description()` 只管说自己能干什么，`parameters()` 专管说要传什么参数，职责分离。
 
 ## 升级 ToolRegistry
 
@@ -493,7 +502,19 @@ public class ToolUtils {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static String extractField(String input, String fieldName) {
-        if (input == null || input.isBlank()) {
+        return extractField(input, fieldName, true);
+    }
+
+    public static String extractRequiredField(String input, String fieldName) {
+        return extractField(input, fieldName, false);
+    }
+
+    public static String missingRequiredField(String fieldName) {
+        return "{\"error\":\"缺少必填参数 " + fieldName + "\"}";
+    }
+
+    private static String extractField(String input, String fieldName, boolean fallbackToRawInput) {
+        if (input == null || input.isBlank() || fieldName == null || fieldName.isBlank()) {
             return "";
         }
         String trimmed = input.trim();
@@ -504,28 +525,31 @@ public class ToolUtils {
                 JsonNode node = MAPPER.readTree(trimmed);
                 JsonNode field = node.get(fieldName);
                 if (field != null && !field.isNull()) {
-                    return field.asText();
+                    return field.asText().trim();
                 }
                 // JSON 合法但目标字段不存在，返回空串让调用方知道没拿到值
                 return "";
             } catch (Exception ignored) {
-                // JSON 解析失败，走兜底
+                // JSON 解析失败，按调用方要求决定是否兜底
+                return fallbackToRawInput ? trimmed : "";
             }
         }
 
-        // 兜底：如果不是 JSON 或解析失败，直接返回原始输入
-        return trimmed;
+        // 兜底：如果不是 JSON，单参数工具可以直接返回原始输入
+        return fallbackToRawInput ? trimmed : "";
     }
 }
 ```
 
 这个方法分三种情况处理：
 
-- **正常路径**：大脑传了正确的 JSON（`{"orderId":"88231"}`），从里面提取指定字段，返回 `"88231"`。
-- **字段缺失**：大脑传了 JSON 但字段名不对（`{"order_id":"88231"}`），`node.get("orderId")` 拿到 null，返回空串——调用方拿到空值会返回"订单不存在"，比把整段 JSON 当订单号传下去更容易排查。
-- **纯文本兜底**：大脑传了纯文本（`88231`），JSON 解析失败，直接把原始输入当结果返回。
+- **正常路径**：大脑传了正确的 JSON（`{"orderId":"88231"}`），从里面提取指定字段，返回订单号 `88231`。
+- **字段缺失**：大脑传了 JSON 但字段名不对（`{"order_id":"88231"}`），`node.get("orderId")` 拿到 null，返回空串——调用方拿到空值会返回“订单不存在”，比把整段 JSON 当订单号传下去更容易排查。
+- **纯文本兜底**：大脑传了纯文本（`88231`），宽松提取会直接把原始输入当结果返回。
 
 为什么要兜底？因为即使加了 JSON Schema，也不能保证大脑每次都传 JSON。特别是只有一个参数的工具（比如 `queryOrder` 只需要订单号），有些模型习惯直接传值而不包 JSON。兜底逻辑让这种情况也能正常工作，而不是直接报错。
+
+但兜底只适合单参数工具。像 `applyRefund` 这种多参数工具，不能把 `orderId=88231, reason=质量问题` 这种整段文本当成某一个字段值，否则很容易制造假成功。所以多参数工具应该使用 `extractRequiredField()`：JSON 合法且字段存在才返回字段值，字段缺失或 JSON 解析失败都返回空串，再由工具返回明确的缺参错误。
 
 ### 2. 在工具里使用
 
@@ -560,7 +584,7 @@ public class QueryOrderTool implements Tool {
 Action Input: <传给工具的参数>
 ```
 
-太模糊了，大脑不知道"参数"该长什么样。现在改成：
+太模糊了，大脑不知道参数该长什么样。现在改成：
 
 ```text
 Action Input: <传给工具的参数，必须严格按照工具的参数 Schema 输出 JSON 格式。如果工具无需参数，输出 {}>
@@ -599,6 +623,51 @@ private String buildSystemPrompt() {
 ```
 
 变化只有两处：`Action Input` 的格式说明更明确了，注意事项里加了一条 JSON 格式约束。提示词的其他部分不变——打磨的活留给第 07 篇。
+
+还有一个容易漏掉的工程细节：如果大脑把 JSON 分多行输出，上一篇的 `parseAction()` 只读取 `Action Input:` 所在行，会把下面这种输入解析成一个孤零零的 `{`：
+
+```text
+Action Input: {
+  "orderId": "88231"
+}
+```
+
+所以解析动作时也要支持多行 `Action Input`。可以从 `Action Input:` 后开始收集内容，直到遇到下一个 ReAct 标签：
+
+```java
+private Action parseAction(String llmOutput) {
+    String toolName = "";
+    String toolInput = "";
+
+    String[] lines = llmOutput.split("\\R", -1);
+    for (int i = 0; i < lines.length; i++) {
+        String trimmed = lines[i].trim();
+        if (trimmed.startsWith("Action Input:")) {
+            StringBuilder inputBuilder = new StringBuilder(
+                    trimmed.substring("Action Input:".length()).trim());
+            while (i + 1 < lines.length && !isPromptSection(lines[i + 1].trim())) {
+                i++;
+                if (!inputBuilder.isEmpty()) {
+                    inputBuilder.append("\n");
+                }
+                inputBuilder.append(lines[i].trim());
+            }
+            toolInput = inputBuilder.toString().trim();
+        } else if (trimmed.startsWith("Action:")) {
+            toolName = trimmed.substring("Action:".length()).trim();
+        }
+    }
+    return new Action(toolName, toolInput);
+}
+
+private boolean isPromptSection(String line) {
+    return line.startsWith("Thought:")
+            || line.startsWith("Action:")
+            || line.startsWith("Action Input:")
+            || line.startsWith("Observation:")
+            || line.startsWith("Final Answer:");
+}
+```
 
 ## 升级前后对比：跑一个退款场景
 
@@ -653,7 +722,7 @@ private String buildSystemPrompt() {
 | `Action Input: {"orderId":"88231","reason":"质量问题"}` | `Action Input: {"orderId":"88231","reason":"质量问题：扫地机无法回充，维修无效"}` |
 | 偶尔出现 `orderId=88231, reason=质量问题` | 格式一致性明显提升，JSON 格式稳定 |
 
-升级前的 `queryOrder` 大脑直接传纯文本 `88231`，因为描述里说"输入：订单号"。升级后，Schema 明确定义了 `orderId` 字段，大脑会老老实实包一层 JSON。而 `applyRefund` 这种多参数工具的提升最明显——字段名、格式不再摇摆。
+升级前的 `queryOrder` 大脑直接传纯文本 `88231`，因为描述里说“输入：订单号”。升级后，Schema 明确定义了 `orderId` 字段，大脑会老老实实包一层 JSON。而 `applyRefund` 这种多参数工具的提升最明显——字段名、格式不再摇摆。
 
 ## 和 Function Call 原生方案的关系
 
@@ -674,7 +743,7 @@ private String buildSystemPrompt() {
 
 文本 ReAct 的核心优势是**推理过程透明**——Thought 直接写在输出里，格式统一，你能一字一句看到大脑在想什么。原生 Function Call 的输出虽然在 `content` 里也有推理文本，但格式不固定、没有 `Thought:` 这种标签，追踪和调试的体验不如文本 ReAct 直观。对于学习和调试 Agent 来说，能清晰看到每一步 Thought 比什么都重要。
 
-另一个考虑是兼容性。文本 ReAct 只要求模型能做文本生成，几乎所有大模型都支持。原生 Function Call 需要模型 API 端做专门支持，不同厂商的实现细节还有差异。在学习阶段用文本 ReAct 理解原理，生产环境再切到原生 Function Call 追求稳定性——这是一条务实的路径。
+另一个考虑是兼容性。文本 ReAct 只要求模型能做文本生成，几乎所有大模型都支持。原生 Function Call 需要模型 API 端做专门支持，不同厂商的实现细节还有差异。在学习阶段用文本 ReAct 理解原理，后续稳定环境再切到原生 Function Call 追求稳定性——这是一条务实的路径。
 
 > 不管用哪种方案，工具的定义方式是一样的——都是 JSON Schema。这一篇升级的 `Tool` 接口和 `parameters()` 方法，切换到原生 Function Call 时直接复用，改的只是调用方式和解析方式。
 
@@ -696,7 +765,7 @@ private String buildSystemPrompt() {
 
 ### 2. description 里写返回值的概要
 
-大脑决定调哪个工具时，最重要的判断依据是"这个工具能给我什么信息"。所以 `description` 里要告诉大脑返回值包含哪些内容：
+大脑决定调哪个工具时，最重要的判断依据是这个工具能给我什么信息。所以 `description` 里要告诉大脑返回值包含哪些内容：
 
 ```text
 // 反面示例：只说能做什么，没说返回什么
@@ -721,7 +790,7 @@ JSON Schema 的字段 `description` 不只是给人看的，大脑也会参考�
 }
 ```
 
-这段 Schema 告诉大脑字段名是 `orderId`、类型是字符串，但没说值长什么样。大脑可能会传 `"订单88231"`、`"#88231"` 或 `"88231"`——哪种都符合 `string` 类型。
+这段 Schema 告诉大脑字段名是 `orderId`、类型是字符串，但没说值长什么样。大脑可能会传“订单88231”、“#88231”或“88231”——哪种都符合 `string` 类型。
 
 加个示例就好了：
 
@@ -734,7 +803,7 @@ JSON Schema 的字段 `description` 不只是给人看的，大脑也会参考�
 }
 ```
 
-一个"如 88231"就能锚定格式——纯数字，不带前缀，不带井号。
+一个“如 88231”就能锚定格式——纯数字，不带前缀，不带井号。
 
 ### 4. 用 enum 约束有限取值
 
@@ -752,7 +821,7 @@ JSON Schema 的字段 `description` 不只是给人看的，大脑也会参考�
     },
     "serviceType": {
       "type": "string",
-      "description": "售后类型",
+      "description": "售后类型：refund=退款，exchange=换货，repair=维修",
       "enum": ["refund", "exchange", "repair"]
     }
   },
@@ -760,7 +829,7 @@ JSON Schema 的字段 `description` 不只是给人看的，大脑也会参考�
 }
 ```
 
-`enum` 把取值范围限死在三个选项里，大脑不会传 `"退款"`、`"退货退款"` 这些五花八门的值。
+`enum` 把取值范围限死在三个选项里，大脑不会传“退款”、“退货退款”这些五花八门的值。
 
 ### 5. 一个工具做一件事
 
@@ -785,7 +854,7 @@ JSON Schema 的字段 `description` 不只是给人看的，大脑也会参考�
 | 参数描述 | 自然语言写在 `description()` 里 | JSON Schema 单独定义，结构化、无歧义 |
 | buildToolList() | 拼名称 + 描述文本 | 拼名称 + 描述 + 参数 Schema |
 | 提示词 | `Action Input: <参数>` | `Action Input: <JSON 格式，按 Schema>` |
-| invoke() 解析 | `input.trim()` 直接用 | `extractField()` 从 JSON 提取字段，带兜底 |
+| invoke() 解析 | `input.trim()` 直接用 | 单参数用 `extractField()` 宽松提取，多参数用 `extractRequiredField()` 严格提取 |
 | 大脑传参格式 | 文本、键值对、JSON 混杂 | 主要是 JSON，一致性大幅提升 |
 | 错误率 | 多参数工具偶发格式错误 | 格式错误明显减少 |
 
@@ -795,10 +864,10 @@ JSON Schema 的字段 `description` 不只是给人看的，大脑也会参考�
 
 - **翻车根源**：自然语言描述参数有三个先天缺陷——格式模糊、字段名不确定、约束缺失，大脑只能靠猜。
 - **JSON Schema**：用结构化的格式精确定义字段名、类型、是否必填，不给大脑猜的空间。
-- **四处代码变动**：`Tool` 接口新增 `parameters()` 方法；五个工具各自实现 Schema；`ToolRegistry.buildToolList()` 输出 Schema；提示词里约束 `Action Input` 为 JSON 格式。
-- **extractField 兜底**：优先按 JSON 提取字段，解析失败则返回原始输入，宽进严出。
+- **五处代码变动**：`Tool` 接口新增 `parameters()` 方法；五个工具各自实现 Schema；`ToolRegistry.buildToolList()` 输出 Schema；提示词里约束 `Action Input` 为 JSON 格式；`parseAction()` 支持多行 JSON 入参。
+- **extractField 兜底**：优先按 JSON 提取字段，单参数工具可以解析失败后返回原始输入；多参数工具用 `extractRequiredField()` 严格提取，缺字段就返回明确错误。
 - **实战经验**：description 只写用途和返回值概要，不写参数；参数 description 给示例值；有限取值用 enum；一个工具只做一件事。
 
-> 一句话收尾：JSON Schema 不是万能的，但它把大脑传参的确定性从"大部分时候对"提升到了"绝大部分时候对"——在工程上，这个差距就是能不能上生产的区别。
+> 一句话收尾：JSON Schema 不是万能的，但它把大脑传参的确定性从“大部分时候对”提升到了“绝大部分时候对”——在工程上，这个差距就是能不能稳定回复的关键因素。
 
 下一篇咱们进入提示词设计——系统提示词是 Agent 的灵魂，怎么写 Few-shot 示例引导大脑稳定输出、怎么用负面约束防止跑偏、怎么处理边界情况，都是第 07 篇的内容。我们下一篇见。
