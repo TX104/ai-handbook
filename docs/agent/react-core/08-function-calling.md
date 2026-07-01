@@ -4,6 +4,8 @@
 
 这一篇，咱们换个思路——不再从文本里提取结构化数据，而是**让模型直接返回结构化数据**。这就是 Function Calling。
 
+> 升级到 Function Calling 之后，TinyAgent 的循环模式和 Spring AI、LangChain4j 等主流框架完全一致——这就是现代工具调用 Agent 的工业主路径。它保留了 ReAct 的 Act → Observe → Loop 工程骨架，但模型的推理过程（Thought）从显式的文本标签变成了隐式的内部决策。换句话说，**大脑还在想，只是不一定把想法写出来了**。如果你的场景需要把推理过程显式拿回来做审计或调试，可以在 Function Calling 框架内加上可观测的推理通道。
+
 > 本项目中具体代码已上传 GitHub [TinyAgent](https://github.com/nageoffer/tinyagent)，大家 Clone 项目后，将代码分支切换到 1.3.x，默认主分支是最新代码。运行前复制 `.env.example` 为 `.env`，把自己的 API Key 填进去，默认阿里云百炼平台；`.env` 已加入 `.gitignore`，切分支时不会丢。
 
 ## 文本解析的三个硬伤
