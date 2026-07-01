@@ -81,16 +81,18 @@
 
 ### Agent 系列 · 从 RAG 到自主智能体
 
-| 章节 | 关键内容 | 状态 |
-|:-----|:-----|:----:|
-| **第一部分：从 RAG 到 Agent** | | |
-| [01、RAG 和 Agent 的边界到底在哪？](./docs/agent/from-rag-to-agent/01-rag-vs-agent.md) | 被动检索与主动决策的区别，理解 Agent 循环价值 | ✅ |
-| [02、Agent 架构全景：大脑、工具、记忆与规划](./docs/agent/from-rag-to-agent/02-agent-architecture.md) | LLM、工具、记忆、规划四要素协作机制 | ✅ |
-| [03、比特严选智能体：从蓝图开始设计](./docs/agent/from-rag-to-agent/03-bitmall-agent-intro.md) | 电商客服场景拆解、任务分级与 MVP 范围 | ✅ |
-| **第二部分：ReAct 核心** | | |
-| [04、ReAct 是什么？推理与行动交替运转](./docs/agent/react-core/04-what-is-react.md) | Thought、Action、Observation 三元组与完整轨迹 | ✅ |
-| [05、用纯 Java 手写最小 ReAct Agent](./docs/agent/react-core/05-react-loop.md) | OkHttp 调用大模型，串起工具注册表和主循环 | ✅ |
-| [06、工具定义别靠猜：用 JSON Schema 约束入参](./docs/agent/react-core/06-tool-definition.md) | 结构化描述工具参数，提升调用稳定性 | ✅ |
+| 章节                                                                                     | 关键内容 | 状态 |
+|:---------------------------------------------------------------------------------------|:-----|:----:|
+| **第一部分：从 RAG 到 Agent**                                                                 | | |
+| [01、RAG 和 Agent 的边界到底在哪？](./docs/agent/from-rag-to-agent/01-rag-vs-agent.md)           | 被动检索与主动决策的区别，理解 Agent 循环价值 | ✅ |
+| [02、Agent 架构全景：大脑、工具、记忆与规划](./docs/agent/from-rag-to-agent/02-agent-architecture.md)   | LLM、工具、记忆、规划四要素协作机制 | ✅ |
+| [03、比特严选智能体：从蓝图开始设计](./docs/agent/from-rag-to-agent/03-bitmall-agent-intro.md)         | 电商客服场景拆解、任务分级与 MVP 范围 | ✅ |
+| **第二部分：ReAct 核心**                                                                      | | |
+| [04、ReAct 是什么？推理与行动交替运转](./docs/agent/react-core/04-what-is-react.md)                  | Thought、Action、Observation 三元组与完整轨迹 | ✅ |
+| [05、用纯 Java 手写最小 ReAct Agent](./docs/agent/react-core/05-react-loop.md)                | OkHttp 调用大模型，串起工具注册表和主循环 | ✅ |
+| [06、工具定义别靠猜：用 JSON Schema 约束入参](./docs/agent/react-core/06-tool-definition.md)         | 结构化描述工具参数，提升调用稳定性 | ✅ |
+| [07、Prompt 是 Agent 的灵魂：ReAct 提示词设计](./docs/agent/react-core/07-react-prompt-design.md) | 结构化提示词、Few-shot 示例与负面约束 | ✅ |
+| [08、使用 OpenAI Function Calling 原生工具](./docs/agent/react-core/08-function-calling.md)   | 模型直接返回结构化数据，替代文本解析 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
