@@ -351,7 +351,7 @@ public String agentRun(String userMessage) {
 | Observation | `trace.add("Observation: " + observation)` | 工具结果记入轨迹，等下一轮大脑来看 |
 | 循环 | `for (int step = 0; step < MAX_STEPS; step++)` | 三步反复转，直到 Final Answer 或达到上限 |
 
-这段代码还是骨架，`buildReActPrompt`、`parseAction`、`toolRegistry` 这些方法的实现分别在后面的第 05 到 08 篇手把手写出来。但你现在应该能感受到：**ReAct 的实现并不复杂——一个循环、一段提示词、一组工具，三样凑齐就能跑**。真正的挑战藏在每个环节的细节里——提示词怎么写、输出怎么解析、异常怎么兜底，后面几篇会逐一攻克。
+这段代码还是骨架，`buildReActPrompt`、`parseAction`、`toolRegistry` 这些方法的实现在后面几篇手把手写出来。但你现在应该能感受到：**ReAct 的实现并不复杂——一个循环、一段提示词、一组工具，三样凑齐就能跑**。真正的挑战藏在每个环节的细节里——提示词怎么写、输出怎么解析、异常怎么兜底，后面几篇会逐一攻克。
 
 ## ReAct 的边界
 
