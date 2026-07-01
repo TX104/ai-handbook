@@ -93,6 +93,7 @@
 | [06、工具定义别靠猜：用 JSON Schema 约束入参](./docs/agent/react-core/06-tool-definition.md)         | 结构化描述工具参数，提升调用稳定性 | ✅ |
 | [07、Prompt 是 Agent 的灵魂：ReAct 提示词设计](./docs/agent/react-core/07-react-prompt-design.md) | 结构化提示词、Few-shot 示例与负面约束 | ✅ |
 | [08、使用 OpenAI Function Calling 原生工具](./docs/agent/react-core/08-function-calling.md)   | 模型直接返回结构化数据，替代文本解析 | ✅ |
+| [09、多维度终止控制：让 Agent 不再死循环](./docs/agent/react-core/09-termination-control.md)          | 四道防线解决死循环、空转与 Token 超预算 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
