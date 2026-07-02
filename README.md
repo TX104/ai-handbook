@@ -96,6 +96,7 @@
 | [09、多维度终止控制：让 Agent 运行更安全](./docs/agent/react-core/09-termination-control.md)          | 四道防线解决死循环、空转与 Token 超预算 | ✅ |
 | **第三部分：记忆与上下文**                                                                      | | |
 | [10、Agent 为什么需要记忆？](./docs/agent/memory-and-context/10-why-memory.md)                  | 多轮对话上下文丢失问题与记忆机制引入 | ✅ |
+| [11、记忆管理三板斧：窗口、摘要与混合策略](./docs/agent/memory-and-context/11-memory-module.md)    | 滑动窗口、摘要压缩、混合策略控制记忆预算 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
