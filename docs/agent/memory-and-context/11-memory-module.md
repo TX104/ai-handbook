@@ -323,9 +323,7 @@ public class SummaryChatMemory implements ChatMemory {
 
 ### 2. 流程图示
 
-```plantuml
-
-```
+![](https://oss.open8gu.com/iShot_2026-07-02_13.39.31.png)
 
 ### 3. Java 实现
 
