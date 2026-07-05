@@ -97,6 +97,9 @@
 | **第三部分：记忆与上下文**                                                                      | | |
 | [10、Agent 为什么需要记忆？](./docs/agent/memory-and-context/10-why-memory.md)                  | 多轮对话上下文丢失问题与记忆机制引入 | ✅ |
 | [11、记忆管理三板斧：窗口、摘要与混合策略](./docs/agent/memory-and-context/11-memory-module.md)    | 滑动窗口、摘要压缩、混合策略控制记忆预算 | ✅ |
+| [12、会话记忆持久化：用数据库存住每一轮对话](./docs/agent/memory-and-context/12-persistent-memory.md) | 用户与会话隔离，记忆重启不丢、多实例共享 | ✅ |
+| [13、长期记忆：让 Agent 跨会话认识用户](./docs/agent/memory-and-context/13-long-term-memory.md) | 用户画像、交互记录与相关性检索注入 | ✅ |
+| [14、上下文工程：每一个 Token 都花在刀刃上](./docs/agent/memory-and-context/14-context-engineering.md) | 预算分配、工具裁剪与 Observation 折叠 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
