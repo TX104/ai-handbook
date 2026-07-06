@@ -10,7 +10,7 @@
 
 这一篇，咱们给 TinyAgent 装上规划能力——先想清楚要干什么、分几步、每步用什么工具，然后再一步一步执行。这就是 Plan-and-Execute 模式。
 
-> 本项目中具体代码已上传 GitHub [TinyAgent](https://github.com/nageoffer/tinyagent)，大家 Clone 项目后，将代码分支切换到 2.0.x，默认主分支是最新代码。运行前复制 `.env.example` 为 `.env`，把自己的 API Key 填进去，默认阿里云百炼平台；`.env` 已加入 `.gitignore`，切分支时不会丢。
+> 本项目中具体代码已上传 GitHub [TinyAgent](https://github.com/nageoffer/tinyagent)，大家 Clone 项目后，将代码分支切换到 1.10.x，默认主分支是最新代码。运行前复制 `.env.example` 为 `.env`，把自己的 API Key 填进去，默认阿里云百炼平台；`.env` 已加入 `.gitignore`，切分支时不会丢。
 
 ## ReAct 的天花板：走一步看一步的代价
 
