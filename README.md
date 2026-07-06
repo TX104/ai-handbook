@@ -100,6 +100,8 @@
 | [12、会话记忆持久化：用数据库存住每一轮对话](./docs/agent/memory-and-context/12-persistent-memory.md) | 用户与会话隔离，记忆重启不丢、多实例共享 | ✅ |
 | [13、长期记忆：让 Agent 跨会话认识用户](./docs/agent/memory-and-context/13-long-term-memory.md) | 用户画像、交互记录与相关性检索注入 | ✅ |
 | [14、上下文工程：每一个 Token 都花在刀刃上](./docs/agent/memory-and-context/14-context-engineering.md) | 预算分配、工具裁剪与 Observation 折叠 | ✅ |
+| **第四部分：规划与编排**                                                                      | | |
+| [15、Plan-and-Execute：先规划再执行](./docs/agent/planning-and-orchestration/15-plan-and-execute.md) | 复杂任务拆解、动态重规划与模式路由 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
@@ -120,7 +122,8 @@ awesome-ai-handbook/
 │   ├── agent/                                    # 🤖 Agent 体系教学
 │   │   ├── from-rag-to-agent/                    #     从 RAG 到 Agent
 │   │   ├── react-core/                           #     ReAct 核心
-│   │   └── memory-and-context/                   #     记忆与上下文
+│   │   ├── memory-and-context/                   #     记忆与上下文
+│   │   └── planning-and-orchestration/           #     规划与编排
 │   ├── growth/                                   # 🧭 成长路径
 │   ├── interview/                                # 💼 AI Agent 面试题库
 │   └── rag/                                      # 📖 RAG 体系教学
