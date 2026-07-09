@@ -60,6 +60,8 @@ Function Calling 是一种 API 协议——你通过 API 参数传入工具定�
 
 打个比方：文本 ReAct 就像你跟同事约定需要我做什么就写在便利贴上，格式是工具名加参数，同事写字潦草的时候你就看不懂。Function Calling 就像公司上了一套工单系统，同事在系统里选工具、填参数、提交，你收到的永远是格式标准的工单——不存在看不懂的情况。
 
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.47.png)
+
 ## 从文本 ReAct 到 Function Calling：到底改了什么
 
 升级到 Function Calling，核心代码逻辑没变——还是 Agent 循环，还是推理-行动-观测的三元组。变的是三个东西：**工具怎么告诉模型、模型怎么告诉你要调什么、工具结果怎么传回模型**。
@@ -201,11 +203,15 @@ messages[3] = {role: "tool",      tool_call_id: "call_abc", content: "{\"orderId
 
 系统提示词从 1300 字缩减到 200 字——这不仅节省 Token，还让模型能把更多注意力放在用户问题和工具结果上，而不是格式约束上。
 
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.48.png)
+
 ## 代码实战：升级 TinyAgent
 
 概念讲完了，动手改代码。这次是直接升级现有的 `react` 包，而不是另起一套——Function Calling 本质上还是 ReAct 循环，只是工具调用的通信方式从文本协议换成了 API 协议。
 
 变动涉及三个层面：新增两个数据载体（`ToolCallInfo`、`ChatResponse`），`LlmClient` 新增 `chatWithTools()` 方法，`ReActAgent` 用 Function Calling 替换文本解析。`Tool` 接口、五个工具实现、`ToolRegistry`（除了新增一个方法）、`BitMallAgentDemo` 入口——全都不用改。
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.49.png)
 
 ### 1. ToolRegistry：新增 buildToolsJsonArray()
 

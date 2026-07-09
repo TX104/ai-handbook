@@ -296,18 +296,82 @@ public class LlmClient {
 
 **`stop` 序列是关键**。你可能好奇：为什么要加一个 `Observation:` 的停止序列？
 
-回想一下 ReAct 的流程：大脑输出 Thought + Action + Action Input 之后，应该停下来等工具执行。但大模型不知道该停——它可能会接着自己编一个 Observation：
+回想一下 ReAct 的流程：大脑输出 Thought + Action + Action Input 之后，应该停下来，等你的代码去调工具、拿真实结果。但问题来了——大模型是自回归生成器，它的本能就是一个字一个字地往下写，写完 Action Input 之后它不会自己停下来。它在训练数据里见过太多"Action 后面跟 Observation"的模式，会顺手把 Observation 也编出来。
+
+用退款场景走一遍你就明白了。假设没有 stop 序列，用户说"我想退订单 88231"，大脑可能会一口气输出这些：
 
 ```text
-Thought: 需要查订单信息。
+── 第 1 轮（模型自己编的） ──────────────────────────
+Thought: 用户想退订单 88231，我需要先查订单详情。
 Action: queryOrder
 Action Input: 88231
-Observation: {"orderId":"88231","product":"比特 S10 Pro 扫地机"...}  ← 大脑自己编的！
+Observation: {"orderId":"88231","product":"比特 S10 Pro 扫地机","price":1999,"status":"已签收"}
+                                            ↑ queryOrder 根本没被调用，这条数据是编的
+
+── 第 2 轮（还是模型自己编的） ──────────────────────────
+Thought: 已查到订单，签收状态，可以申请退款。
+Action: applyRefund
+Action Input: {"orderId":"88231","reason":"用户主动申请退款"}
+Observation: {"success":true,"refundId":"RF20260629001","message":"退款已提交"}
+                                            ↑ applyRefund 也没被调用，退款根本没发生
+
+── 直接给答案 ──────────────────────────────────
+Thought: 退款已完成，可以回复用户了。
+Final Answer: 您好，订单 88231 的退款已提交，退款单号 RF20260629001，预计 1-3 个工作日到账。
 ```
 
-如果大脑把 Observation 也编了，那工具根本没被真正调用，数据全是幻觉。加上 `stop: ["Observation:"]` 之后，模型一旦要输出 `Observation:` 这个词，API 就立即截断返回——大脑被强制停下来，等你的代码去调工具、拿真实结果。
+看起来流程很完整，对吧？但仔细想想——`queryOrder` 和 `applyRefund` 这两个工具**根本没有被真正调用过**。整段输出都是大脑一口气编出来的。那两行 Observation 里的数据不是工具返回的，是模型自己想象的。
 
-而当大脑认为任务完成，输出 `Final Answer:` 时，回复里不会出现 `Observation:`，停止序列不会触发，模型自然地输出完整答复。
+更危险的是：模型跳过了 `getCurrentTime` 和 `searchKnowledge`，没有检查退货时限，没有查售后政策，直接就"退了"。在真实系统里，退款 API 根本没有被调用，但模型已经告诉用户"退款已提交"了——这就是幻觉变成了承诺。
+
+**`stop` 序列就是解决这个问题的。** 要真正理解它，得先搞清楚大模型生成文本的底层机制。
+
+大模型不是一次性吐出整段文本的，而是一个 Token 一个 Token 地往外蹦。你可以把它想象成一台打字机：打完一个字，才决定下一个字打什么。模型写完 `Action Input: 88231` 之后，下一个要打的字大概率就是 `Observation`——因为它在训练数据里见过无数次这个模式。
+
+`stop` 参数不是提示词，模型看不到它。它是你在请求参数里传给 API 服务器的一道指令，相当于告诉服务器：
+
+> "你帮我盯着这台打字机，一个字一个字地看。它一旦打出了 `Observation:` 这几个字，你立刻把打字机的电源拔了，然后把 `Observation:` 这几个字也扔掉，只把前面已经打好的内容给我。"
+
+关键点在这：**API 返回给你的内容里，连 `Observation:` 本身都没有。** 不是返回了再让你删，而是在返回之前就被吞掉了。你的代码收到的是干干净净的三行——Thought、Action、Action Input，后面什么都没有。
+
+用退款场景走一圈你就彻底明白了。加上 `stop: ["Observation:"]` 后：
+
+**第 1 圈**，你的代码把消息列表发给 API。模型这台打字机开始一个字一个字地打：`T`、`h`、`o`、`u`、`g`、`h`、`t`、`:`……一路打到 `Action Input: 88231`，接着它要打 `O`、`b`、`s`、`e`、`r`、`v`、`a`、`t`、`i`、`o`、`n`、`:`——API 检测到了 stop 关键词，拔电源，吞掉 `Observation:`，把前面的内容返回。你的代码收到的就是这些：
+
+```text
+Thought: 用户想退订单 88231，我需要先查订单详情。
+Action: queryOrder
+Action Input: 88231
+（到这里就没了，干干净净，没有 Observation）
+```
+
+然后你的代码接管。`parseAction` 从这三行里提取出工具名 `queryOrder` 和参数 `88231`。`toolRegistry.execute()` 调用真实的 `QueryOrderTool`，拿到真实的订单数据。你的代码自己拼一条消息 `"Observation: {真实数据}"` 追加到消息列表，开始第 2 圈。
+
+**第 2 圈**，模型看到上一圈的真实订单数据，发现签收时间是 6 月 22 日，想判断退货时限。它继续打字：
+
+```text
+Thought: 已查到订单，签收 6 月 22 日。需要知道今天日期来判断是否在退货期内。
+Action: getCurrentTime
+Action Input:
+（又到这里就没了——API 再次截断）
+```
+
+你的代码再次接管，调用真实的 `getCurrentTimeTool`，拿回真实的当前时间，追加到消息列表。
+
+**第 3 圈**、**第 4 圈**同理——每一圈模型都在该停的地方被截断，每一次 Observation 都是你的代码调用真实工具后自己拼上去的。
+
+**第 5 圈**，模型认为信息收集完毕，开始打：
+
+```text
+Thought: 订单信息、当前时间、售后政策、退款结果都齐了，可以回复用户。
+Final Answer: 您好，您的退款已提交……
+```
+
+这一圈它输出的是 `Final Answer:`，自始至终没有打出 `Observation:` 这几个字，stop 序列不会触发，模型正常输出完整答复，你的代码完整地收到这段文本。
+
+下面这张对比图把两种情况放在一起看——左边是没有 stop 序列时大脑自说自话、工具从未被调用的情况，右边是加了 stop 序列后每一圈都被及时截断、交给真实工具执行的正确流程：
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.38.png)
 
 **`readTimeout` 设为 120 秒**。大模型推理需要时间，尤其是第一圈要消化整段系统提示词，默认的 10 秒超时大概率不够。
 
@@ -334,6 +398,10 @@ messages[5] = {role: "user",      content: "Observation: {工具返回结果}"}
 ```
 
 每转一圈，消息列表就多两条：一条 `assistant`（大脑的思考和行动），一条 `user`（工具返回的观测结果）。模型每次被调用时，都能看到从头到尾的完整轨迹，知道已经走到哪一步了。
+
+下面这张图把消息列表的增长过程画出来，一圈一圈看得很清楚：
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.37.png)
 
 ### 2. 系统提示词
 
@@ -417,7 +485,11 @@ private String extractFinalAnswer(String llmOutput) {
 
 ### 4. run() 方法：完整的主循环
 
-所有零件到齐，`run()` 方法把它们串成循环：
+所有零件到齐，`run()` 方法把它们串成循环。先看流程图抓住整体脉络，再看代码就不会迷路：
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.39.png)
+
+代码实现如下：
 
 ```java
 public class ReActAgent {

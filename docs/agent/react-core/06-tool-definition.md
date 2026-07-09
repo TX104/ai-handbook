@@ -66,6 +66,10 @@ Action Input: {"orderId":"88231"}
 
 这一篇，咱们就把这套思路搬到 ReAct Agent 里来。
 
+下面这张图把问题和解法放在一起看——左边是升级前，大脑只能靠猜；右边是升级后，JSON Schema 把格式锁死：
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.40.png)
+
 ## JSON Schema：把参数说清楚的标准方式
 
 ### 1. 什么是 JSON Schema
@@ -488,6 +492,10 @@ public class ToolRegistry {
 
 信息量没有增加多少，但**精确度提升了一个数量级**。
 
+到这里，工具定义、注册、提示词组装、大脑输出、解析执行的完整链路已经讲完了。下面这张数据流图把整条链路串起来，帮你建立全局视角：
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.41.png)
+
 ## 从入参到解析：extractField 工具方法
 
 参数定义升级了，`invoke()` 里的解析也得跟着升级。上一篇的 `invoke()` 直接拿 `input.trim()` 当参数用，现在入参是 JSON，需要从里面提取字段。
@@ -550,6 +558,10 @@ public class ToolUtils {
 为什么要兜底？因为即使加了 JSON Schema，也不能保证大脑每次都传 JSON。特别是只有一个参数的工具（比如 `queryOrder` 只需要订单号），有些模型习惯直接传值而不包 JSON。兜底逻辑让这种情况也能正常工作，而不是直接报错。
 
 但兜底只适合单参数工具。像 `applyRefund` 这种多参数工具，不能把 `orderId=88231, reason=质量问题` 这种整段文本当成某一个字段值，否则很容易制造假成功。所以多参数工具应该使用 `extractRequiredField()`：JSON 合法且字段存在才返回字段值，字段缺失或 JSON 解析失败都返回空串，再由工具返回明确的缺参错误。
+
+上面这段逻辑用文字描述容易绕，看一下解析流程图会清楚很多：
+
+![](https://oss.open8gu.com/iShot_2026-07-06_18.12.43.png)
 
 ### 2. 在工具里使用
 
