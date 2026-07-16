@@ -105,6 +105,7 @@
 | [16、Skill 是什么？从规范到框架实现](./docs/agent/planning-and-orchestration/16-skill-design.md) | SKILL.md 标准、渐进式披露与主流框架模式 | ✅ |
 | [17、用 TinyAgent 从零实现 Skill 机制](./docs/agent/planning-and-orchestration/17-skill-implementation.md) | 技能解析、工具隔离与动态注入完整实现 | ✅ |
 | [18、跨品类编排：对比、搭配与售后一起跑](./docs/agent/planning-and-orchestration/18-cross-category-orchestration.md) | Tool、Skill 与 Plan-and-Execute 组合编排实战 | ✅ |
+| [19、Reflection：让 Agent 学会自我纠错](./docs/agent/planning-and-orchestration/19-reflection-error-handling.md) | 三级反思结论与重试、重规划错误恢复机制 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
