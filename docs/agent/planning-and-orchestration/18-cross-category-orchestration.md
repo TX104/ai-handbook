@@ -111,21 +111,28 @@ public class CompareProductsTool implements Tool {
     @Override
     public String invoke(String input) {
         String nameA = ToolUtils.extractRequiredField(input, "productA");
+        if (nameA.isBlank()) {
+            return ToolUtils.missingRequiredField("productA");
+        }
         String nameB = ToolUtils.extractRequiredField(input, "productB");
+        if (nameB.isBlank()) {
+            return ToolUtils.missingRequiredField("productB");
+        }
 
         String specA = fuzzyMatch(nameA);
         String specB = fuzzyMatch(nameB);
 
         if (specA == null && specB == null) {
-            return "{\"error\":\"未找到商品：" + nameA + " 和 " + nameB + "\"}";
+            return "{\"error\":" + ToolUtils.toJsonString(
+                    "未找到商品：" + nameA + " 和 " + nameB) + "}";
         }
         if (specA == null) {
-            return "{\"error\":\"未找到商品：" + nameA
-                    + "\",\"productB\":" + specB + "}";
+            return "{\"error\":" + ToolUtils.toJsonString(
+                    "未找到商品：" + nameA) + ",\"productB\":" + specB + "}";
         }
         if (specB == null) {
-            return "{\"error\":\"未找到商品：" + nameB
-                    + "\",\"productA\":" + specA + "}";
+            return "{\"error\":" + ToolUtils.toJsonString(
+                    "未找到商品：" + nameB) + ",\"productA\":" + specA + "}";
         }
         return "{\"productA\":" + specA + ",\"productB\":" + specB + "}";
     }
@@ -185,6 +192,9 @@ public class RecommendBundleTool implements Tool {
     public String invoke(String input) {
         String baseProduct =
                 ToolUtils.extractRequiredField(input, "baseProduct");
+        if (baseProduct.isBlank()) {
+            return ToolUtils.missingRequiredField("baseProduct");
+        }
 
         // 根据基础商品匹配搭配方案
         if (baseProduct.contains("Phone") || baseProduct.contains("手机")) {

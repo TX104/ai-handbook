@@ -224,7 +224,7 @@ public class QueryOrderTool implements Tool {
                  + "\"signTime\":\"2026-06-22\",\"status\":\"已签收\","
                  + "\"trackingNo\":\"SF1234567890\"}";
         }
-        return "{\"error\":\"订单不存在：" + orderId + "\"}";
+        return "{\"error\":" + ToolUtils.toJsonString("订单不存在：" + orderId) + "}";
     }
 }
 ```
@@ -280,8 +280,8 @@ public class ApplyRefundTool implements Tool {
         }
 
         return "{\"success\":true,\"refundId\":\"RF20260629001\","
-             + "\"orderId\":\"" + orderId + "\","
-             + "\"reason\":\"" + reason + "\","
+             + "\"orderId\":" + ToolUtils.toJsonString(orderId) + ","
+             + "\"reason\":" + ToolUtils.toJsonString(reason) + ","
              + "\"message\":\"退款申请已提交，预计 1-3 个工作日到账\"}";
     }
 }
@@ -330,7 +330,7 @@ public class QueryLogisticsTool implements Tool {
                  + "{\"time\":\"2026-06-22 11:35:00\",\"desc\":\"快件已由本人签收\"}"
                  + "]}";
         }
-        return "{\"error\":\"运单不存在：" + trackingNo + "\"}";
+        return "{\"error\":" + ToolUtils.toJsonString("未找到物流轨迹：" + trackingNo) + "}";
     }
 }
 ```
@@ -368,7 +368,7 @@ public class SearchKnowledgeTool implements Tool {
     @Override
     public String invoke(String input) {
         String query = ToolUtils.extractField(input, "query");
-        return "{\"query\":\"" + query + "\","
+        return "{\"query\":" + ToolUtils.toJsonString(query) + ","
              + "\"matched\":\"七天无理由退货政策\","
              + "\"content\":\"签收次日起 7 天内，商品外观和主要配件完整，"
              + "可申请退货；质量问题需先进行售后检测。\"}";
@@ -518,7 +518,15 @@ public class ToolUtils {
     }
 
     public static String missingRequiredField(String fieldName) {
-        return "{\"error\":\"缺少必填参数 " + fieldName + "\"}";
+        return "{\"error\":" + toJsonString("缺少必填参数 " + fieldName) + "}";
+    }
+
+    public static String toJsonString(String value) {
+        try {
+            return MAPPER.writeValueAsString(value == null ? "" : value);
+        } catch (JsonProcessingException e) {
+            return "\"\"";
+        }
     }
 
     private static String extractField(String input, String fieldName, boolean fallbackToRawInput) {
@@ -579,7 +587,7 @@ public class QueryOrderTool implements Tool {
                  + "\"signTime\":\"2026-06-22\",\"status\":\"已签收\","
                  + "\"trackingNo\":\"SF1234567890\"}";
         }
-        return "{\"error\":\"订单不存在：" + orderId + "\"}";
+        return "{\"error\":" + ToolUtils.toJsonString("订单不存在：" + orderId) + "}";
     }
 }
 ```

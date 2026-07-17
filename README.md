@@ -81,31 +81,32 @@
 
 ### Agent 系列 · 从 RAG 到自主智能体
 
-| 章节                                                                                     | 关键内容 | 状态 |
-|:---------------------------------------------------------------------------------------|:-----|:----:|
-| **第一部分：从 RAG 到 Agent**                                                                 | | |
-| [01、RAG 和 Agent 的边界到底在哪？](./docs/agent/from-rag-to-agent/01-rag-vs-agent.md)           | 被动检索与主动决策的区别，理解 Agent 循环价值 | ✅ |
-| [02、Agent 架构全景：大脑、工具、记忆与规划](./docs/agent/from-rag-to-agent/02-agent-architecture.md)   | LLM、工具、记忆、规划四要素协作机制 | ✅ |
-| [03、比特严选智能体：从蓝图开始设计](./docs/agent/from-rag-to-agent/03-bitmall-agent-intro.md)         | 电商客服场景拆解、任务分级与 MVP 范围 | ✅ |
-| **第二部分：ReAct 核心**                                                                      | | |
-| [04、ReAct 是什么？推理与行动交替运转](./docs/agent/react-core/04-what-is-react.md)                  | Thought、Action、Observation 三元组与完整轨迹 | ✅ |
-| [05、用纯 Java 手写最小 ReAct Agent](./docs/agent/react-core/05-react-loop.md)                | OkHttp 调用大模型，串起工具注册表和主循环 | ✅ |
-| [06、工具定义别靠猜：用 JSON Schema 约束入参](./docs/agent/react-core/06-tool-definition.md)         | 结构化描述工具参数，提升调用稳定性 | ✅ |
-| [07、Prompt 是 Agent 的灵魂：ReAct 提示词设计](./docs/agent/react-core/07-react-prompt-design.md) | 结构化提示词、Few-shot 示例与负面约束 | ✅ |
-| [08、使用 OpenAI Function Calling 原生工具](./docs/agent/react-core/08-function-calling.md)   | 模型直接返回结构化数据，替代文本解析 | ✅ |
-| [09、多维度终止控制：让 Agent 运行更安全](./docs/agent/react-core/09-termination-control.md)          | 四道防线解决死循环、空转与 Token 超预算 | ✅ |
-| **第三部分：记忆与上下文**                                                                      | | |
-| [10、Agent 为什么需要记忆？](./docs/agent/memory-and-context/10-why-memory.md)                  | 多轮对话上下文丢失问题与记忆机制引入 | ✅ |
-| [11、记忆管理三板斧：窗口、摘要与混合策略](./docs/agent/memory-and-context/11-memory-module.md)    | 滑动窗口、摘要压缩、混合策略控制记忆预算 | ✅ |
-| [12、会话记忆持久化：用数据库存住每一轮对话](./docs/agent/memory-and-context/12-persistent-memory.md) | 用户与会话隔离，记忆重启不丢、多实例共享 | ✅ |
-| [13、长期记忆：让 Agent 跨会话认识用户](./docs/agent/memory-and-context/13-long-term-memory.md) | 用户画像、交互记录与相关性检索注入 | ✅ |
-| [14、上下文工程：每一个 Token 都花在刀刃上](./docs/agent/memory-and-context/14-context-engineering.md) | 预算分配、工具裁剪与 Observation 折叠 | ✅ |
-| **第四部分：规划与编排**                                                                      | | |
-| [15、Plan-and-Execute：先规划再执行](./docs/agent/planning-and-orchestration/15-plan-and-execute.md) | 复杂任务拆解、动态重规划与模式路由 | ✅ |
-| [16、Skill 是什么？从规范到框架实现](./docs/agent/planning-and-orchestration/16-skill-design.md) | SKILL.md 标准、渐进式披露与主流框架模式 | ✅ |
-| [17、用 TinyAgent 从零实现 Skill 机制](./docs/agent/planning-and-orchestration/17-skill-implementation.md) | 技能解析、工具隔离与动态注入完整实现 | ✅ |
-| [18、跨品类编排：对比、搭配与售后一起跑](./docs/agent/planning-and-orchestration/18-cross-category-orchestration.md) | Tool、Skill 与 Plan-and-Execute 组合编排实战 | ✅ |
+| 章节                                                                                                      | 关键内容 | 状态 |
+|:--------------------------------------------------------------------------------------------------------|:-----|:----:|
+| **第一部分：从 RAG 到 Agent**                                                                                  | | |
+| [01、RAG 和 Agent 的边界到底在哪？](./docs/agent/from-rag-to-agent/01-rag-vs-agent.md)                            | 被动检索与主动决策的区别，理解 Agent 循环价值 | ✅ |
+| [02、Agent 架构全景：大脑、工具、记忆与规划](./docs/agent/from-rag-to-agent/02-agent-architecture.md)                    | LLM、工具、记忆、规划四要素协作机制 | ✅ |
+| [03、比特严选智能体：从蓝图开始设计](./docs/agent/from-rag-to-agent/03-bitmall-agent-intro.md)                          | 电商客服场景拆解、任务分级与 MVP 范围 | ✅ |
+| **第二部分：ReAct 核心**                                                                                       | | |
+| [04、ReAct 是什么？推理与行动交替运转](./docs/agent/react-core/04-what-is-react.md)                                   | Thought、Action、Observation 三元组与完整轨迹 | ✅ |
+| [05、用纯 Java 手写最小 ReAct Agent](./docs/agent/react-core/05-react-loop.md)                                 | OkHttp 调用大模型，串起工具注册表和主循环 | ✅ |
+| [06、工具定义别靠猜：用 JSON Schema 约束入参](./docs/agent/react-core/06-tool-definition.md)                          | 结构化描述工具参数，提升调用稳定性 | ✅ |
+| [07、Prompt 是 Agent 的灵魂：ReAct 提示词设计](./docs/agent/react-core/07-react-prompt-design.md)                  | 结构化提示词、Few-shot 示例与负面约束 | ✅ |
+| [08、使用 OpenAI Function Calling 原生工具](./docs/agent/react-core/08-function-calling.md)                    | 模型直接返回结构化数据，替代文本解析 | ✅ |
+| [09、多维度终止控制：让 Agent 运行更安全](./docs/agent/react-core/09-termination-control.md)                           | 四道防线解决死循环、空转与 Token 超预算 | ✅ |
+| **第三部分：记忆与上下文**                                                                                         | | |
+| [10、Agent 为什么需要记忆？](./docs/agent/memory-and-context/10-why-memory.md)                                   | 多轮对话上下文丢失问题与记忆机制引入 | ✅ |
+| [11、记忆管理三板斧：窗口、摘要与混合策略](./docs/agent/memory-and-context/11-memory-module.md)                            | 滑动窗口、摘要压缩、混合策略控制记忆预算 | ✅ |
+| [12、会话记忆持久化：用数据库存住每一轮对话](./docs/agent/memory-and-context/12-persistent-memory.md)                       | 用户与会话隔离，记忆重启不丢、多实例共享 | ✅ |
+| [13、长期记忆：让 Agent 跨会话认识用户](./docs/agent/memory-and-context/13-long-term-memory.md)                       | 用户画像、交互记录与相关性检索注入 | ✅ |
+| [14、上下文工程：每一个 Token 都花在刀刃上](./docs/agent/memory-and-context/14-context-engineering.md)                  | 预算分配、工具裁剪与 Observation 折叠 | ✅ |
+| **第四部分：规划与编排**                                                                                          | | |
+| [15、Plan-and-Execute：先规划再执行](./docs/agent/planning-and-orchestration/15-plan-and-execute.md)            | 复杂任务拆解、动态重规划与模式路由 | ✅ |
+| [16、Skill 是什么？从规范到框架实现](./docs/agent/planning-and-orchestration/16-skill-design.md)                     | SKILL.md 标准、渐进式披露与主流框架模式 | ✅ |
+| [17、用 TinyAgent 从零实现 Skill 机制](./docs/agent/planning-and-orchestration/17-skill-implementation.md)      | 技能解析、工具隔离与动态注入完整实现 | ✅ |
+| [18、跨品类编排：对比、搭配与售后一起跑](./docs/agent/planning-and-orchestration/18-cross-category-orchestration.md)      | Tool、Skill 与 Plan-and-Execute 组合编排实战 | ✅ |
 | [19、Reflection：让 Agent 学会自我纠错](./docs/agent/planning-and-orchestration/19-reflection-error-handling.md) | 三级反思结论与重试、重规划错误恢复机制 | ✅ |
+| [20、RAG 作为 Tool：让 Agent 自主决定何时检索](./docs/agent/planning-and-orchestration/20-rag-as-tool.md)            | pgvector 向量检索、知识导入与三道工具决策防线 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
