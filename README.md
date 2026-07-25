@@ -109,6 +109,7 @@
 | [20、RAG 作为 Tool：让 Agent 自主决定何时检索](./docs/agent/planning-and-orchestration/20-rag-as-tool.md)            | pgvector 向量检索、知识导入与三道工具决策防线 | ✅ |
 | **第五部分：多智能体**                                                                                          | | |
 | [21、多智能体架构全景：从单体到专家团队](./docs/agent/multi-agent/21-multi-agent-landscape.md)                    | Agent 四要素、协作范式与任务驱动的架构选型 | ✅ |
+| [22、手写主从式多智能体：主 Agent 编排子 Agent](./docs/agent/multi-agent/22-multi-agent-supervisor.md)            | SpecialistAgent、子 Agent 即工具与 LLM Supervisor 编排 | ✅ |
 
 ## 💼 AI Agent 面试题库
 
